@@ -63,3 +63,15 @@ test("the rates route answers with the standard envelope shape", async ({ reques
     expect(body.error).toMatchObject({ code: expect.any(String), message: expect.any(String) });
   }
 });
+
+test("an unknown category shows the not-found state", async ({ page }) => {
+  await page.goto("/category/does-not-exist");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("No such category");
+});
+
+test("an unrouted address shows the root not-found state", async ({ page }) => {
+  await page.goto("/nothing-here");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "There is nothing at this address",
+  );
+});

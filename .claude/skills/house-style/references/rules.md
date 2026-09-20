@@ -15,8 +15,12 @@ descriptive sentence underneath. No page writes its own heading markup; they all
 />
 ```
 
-Loading states still show the header shape — as skeleton blocks matching the eyebrow/title/subtitle
-layout (see `app/category/[slug]/loading.tsx`) — so the page doesn't jump when real content arrives.
+Loading states render a **real** `<PageHeader>` with literal copy — the eyebrow and subtitle are
+always knowable, and only the title is pending, so it states what is happening
+(`title="Loading category"`). See `app/category/[slug]/loading.tsx`. Only the content *below* the
+header is skeletonised. A `<div className="page-header">` holding skeleton bars is a defect: it
+looks right and leaves the screen with no `<h1>`.
+
 Error and not-found pages pass a header that describes *that* state (`title="This category could
 not be loaded"`), not the page's normal title.
 
