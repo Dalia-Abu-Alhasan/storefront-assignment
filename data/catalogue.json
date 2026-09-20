@@ -70,6 +70,77 @@
           }
         }
       ]
+    },
+    {
+      "slug": "board-games",
+      "name": "Board games",
+      "blurb": "Games that earn their shelf space and survive a hundred plays.",
+      "items": [
+        {
+          "sku": "BG-0001",
+          "name": "Hexwood Trading Company",
+          "blurb": "A two-hour trading game for three to five players.",
+          "description": "A route-building game across a forested island, played on interlocking hex tiles that shuffle into a new map each time. The wooden goods markers are screen-printed rather than stickered, so they survive shuffling. Teaches in about ten minutes and lasts around two hours.",
+          "priceEur": 44.0,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-18",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Board game box beside a partly assembled hex tile map",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "BG-0002",
+          "name": "Lantern Street",
+          "blurb": "A quiet tile-laying game for two.",
+          "description": "Two players build adjacent streets from the same shrinking pool of tiles, each trying to light more windows than the other. Plays in twenty-five minutes and fits in a coat pocket. The tiles are 2 mm greyboard with a linen finish.",
+          "priceEur": 27.5,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-11",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Small two-player tile game with tiles laid out in a street pattern",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "BG-0003",
+          "name": "The Longest Winter",
+          "blurb": "A cooperative survival game for one to four players.",
+          "description": "A cooperative game about rationing supplies through a winter that lasts twelve rounds. Every player sees the same dwindling stores, and the game is lost together or not at all. Includes a solo mode that changes the card deck rather than the rules.",
+          "priceEur": 58.25,
+          "currency": "EUR",
+          "inStock": false,
+          "addedOn": "2026-08-22",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Cooperative board game laid out mid-game with resource cards and tokens",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "BG-0004",
+          "name": "Pocket Draughts Set",
+          "blurb": "A magnetic travel set in a folding walnut case.",
+          "description": "A folding walnut case that opens into a full draughts board, with magnetic pieces that stay put on a train table. Closed it is roughly the size of a paperback. The hinge is brass and replaceable.",
+          "priceEur": 32.0,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-07-30",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Folding walnut draughts set open to show the magnetic board and pieces",
+            "width": 800,
+            "height": 600
+          }
+        }
+      ]
     }
   ]
 }
