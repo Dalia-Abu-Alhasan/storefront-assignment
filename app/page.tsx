@@ -1,13 +1,33 @@
-import { redirect } from "next/navigation";
-
+import { CategoryCard } from "@/components/CategoryCard";
+import { PageHeader } from "@/components/PageHeader";
+import { StateMessage } from "@/components/StateMessage";
 import { getCategories } from "@/lib/catalogue";
 
-/**
- * Not a page. The vertical slice ships one category, so the root sends the
- * reader straight to it. A categories index replaces this once there is more
- * than one category to index.
- */
-export default function RootRedirect() {
-  const [first] = getCategories();
-  redirect(`/category/${first.slug}`);
+export default function HomePage() {
+  const categories = getCategories();
+  const count = categories.length;
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Categories"
+        title="Aurora Supply Co."
+        subtitle={`${count} ${count === 1 ? "category" : "categories"} to browse.`}
+      />
+
+      {count === 0 ? (
+        <StateMessage
+          tone="empty"
+          title="Nothing in the catalogue yet"
+          guidance="Categories are added here as they go live. Check back soon."
+        />
+      ) : (
+        <ul className="grid">
+          {categories.map((category) => (
+            <CategoryCard key={category.slug} category={category} />
+          ))}
+        </ul>
+      )}
+    </>
+  );
 }

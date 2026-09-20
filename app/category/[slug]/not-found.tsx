@@ -2,11 +2,8 @@ import Link from "next/link";
 
 import { PageHeader } from "@/components/PageHeader";
 import { StateMessage } from "@/components/StateMessage";
-import { getCategories } from "@/lib/catalogue";
 
 export default function CategoryNotFound() {
-  const [first] = getCategories();
-
   return (
     <>
       <PageHeader
@@ -17,10 +14,10 @@ export default function CategoryNotFound() {
       <StateMessage
         tone="empty"
         title="That category does not exist"
-        guidance="It may have been renamed. Start from a category that does exist and browse from there."
+        guidance="It may have been renamed. Browse the categories and start from there."
         action={
-          <Link className="button" href={`/category/${first.slug}`}>
-            Go to {first.name}
+          <Link className="button" href="/">
+            Browse categories
           </Link>
         }
       />
