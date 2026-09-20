@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Placeholder product image">
+  <rect width="800" height="600" fill="#ece7df"/>
+  <g fill="none" stroke="#c9c0b2" stroke-width="2">
+    <rect x="40.5" y="40.5" width="719" height="519" rx="12"/>
+    <path d="M40 470l190-150 150 110 120-90 300 200"/>
+  </g>
+  <circle cx="600" cy="170" r="48" fill="#dcd4c7"/>
+  <text x="400" y="560" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" fill="#8c8375" text-anchor="middle">Aurora Supply Co.</text>
+</svg>
