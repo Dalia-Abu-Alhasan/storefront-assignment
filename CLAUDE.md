@@ -15,7 +15,7 @@ Aurora Supply Co. — a catalogue storefront. Committed JSON, no database.
 | Lint | `npm run lint` |
 | Build | `npm run build` |
 | All tests | `npm test` |
-| One test | `npx playwright test -g "the root redirects"` |
+| One test | `npx playwright test -g "the root lists every category"` |
 | First-time test setup | `npx playwright install chromium` |
 
 `npm test` builds and serves on port 3100 itself — do not start a dev server first.
@@ -28,8 +28,8 @@ Aurora Supply Co. — a catalogue storefront. Committed JSON, no database.
   `getCategoryBySlug`, `getItemBySku` — never import the JSON directly.
 - Pages are server components. `ConvertedPrice` is the only client component; it exists because a
   server component cannot fetch its own route handler without an absolute URL.
-- `app/page.tsx` is a redirect to the first category, not a page. A categories index replaces it
-  once there is more than one category.
+- `app/page.tsx` is the categories index. It lists every category as a card linking to that
+  category's list page.
 - Route segments each own `loading.tsx`, `error.tsx` and `not-found.tsx`. Adding a segment means
   adding all three.
 

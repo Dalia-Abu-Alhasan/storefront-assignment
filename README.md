@@ -1,6 +1,6 @@
 # Aurora Supply Co.
 
-A small catalogue storefront: one category of desk tools, a list page, a detail page, and one
+A small catalogue storefront: a categories index, category list pages, item detail pages, and one
 server-side currency conversion. Built as the vertical slice for the AI coding agents assignment.
 
 ## Stack
@@ -17,7 +17,7 @@ cp .env.example .env     # then fill in real values
 npm run dev
 ```
 
-The site opens at `http://localhost:3000`, which redirects to `/category/desk-tools`.
+The site opens at `http://localhost:3000`, the categories index.
 
 ## Scripts
 
@@ -47,11 +47,12 @@ showing the EUR price only.
 
 ```
 app/
-  page.tsx                  redirect to the seeded category
+  page.tsx                  categories index
+  loading.tsx               index loading state
   category/[slug]/          list page + loading, error, not-found
   item/[sku]/               detail page + loading, error, not-found
   api/rates/route.ts        the one external call
-components/                 PageHeader, ItemCard, StateMessage, ConvertedPrice
+components/                 PageHeader, CategoryCard, ItemCard, StateMessage, ConvertedPrice
 lib/catalogue.ts            types, runtime validator, accessors
 lib/format.ts               formatDate, formatMoney — the only formatters
 data/catalogue.json         the catalogue

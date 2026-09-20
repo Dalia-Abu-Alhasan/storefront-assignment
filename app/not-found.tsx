@@ -2,11 +2,8 @@ import Link from "next/link";
 
 import { PageHeader } from "@/components/PageHeader";
 import { StateMessage } from "@/components/StateMessage";
-import { getCategories } from "@/lib/catalogue";
 
 export default function RootNotFound() {
-  const [first] = getCategories();
-
   return (
     <>
       <PageHeader
@@ -17,10 +14,10 @@ export default function RootNotFound() {
       <StateMessage
         tone="empty"
         title="No such page"
-        guidance="The link may be out of date, or the address mistyped. Start from a category and browse from there."
+        guidance="The link may be out of date, or the address mistyped. Browse the categories and start from there."
         action={
-          <Link className="button" href={`/category/${first.slug}`}>
-            Go to {first.name}
+          <Link className="button" href="/">
+            Browse categories
           </Link>
         }
       />

@@ -155,6 +155,13 @@ a {
   font-weight: 600;
 }
 
+.card__count {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 .badge {
   display: inline-block;
   margin: 0;
@@ -170,6 +177,10 @@ a {
 
 .badge--out {
   color: var(--warn);
+}
+
+.badge--empty {
+  color: var(--ink-muted);
 }
 
 /* --- detail ------------------------------------------------------------ */
@@ -277,6 +288,10 @@ a {
 
 .skeleton--card {
   height: 19rem;
+}
+
+.skeleton--card-compact {
+  height: 8rem;
 }
 
 .skeleton--line {

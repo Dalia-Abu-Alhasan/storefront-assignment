@@ -74,3 +74,47 @@ being renamed below; update that one line so the doc stays accurate.
 6. Manual check in a browser: `/` shows three category cards with correct names/blurbs/counts;
    clicking one lands on that category; an unrouted path and an unknown category slug both show
    not-found states whose recovery link lands back on `/`.
+
+## Implementation status (2026-09-20)
+
+Everything above was implemented exactly as planned — no deviations from the approach table.
+
+**Deviation from the spec, found by the site-reviewer:** the spec's acceptance criteria asked the
+root loading state to render "a real state message with guidance", but the spec's own states table
+specifies skeletons, and house-style rule 2 calls a bare message in place of skeletons a defect.
+The implementation follows the states table and the house rule; the acceptance criterion is the
+inconsistent artefact. Recorded rather than silently resolved.
+
+**Post-review corrections:** the reviewer found no BLOCKING findings but flagged documentation that
+the change had falsified — `CLAUDE.md` still described `app/page.tsx` as a redirect, and `README.md`
+still described a one-category site with a redirecting root and no `CategoryCard`. Both corrected.
+The index item-count assertion was widened from the first card to all three.
+
+- `components/CategoryCard.tsx` — added.
+- `app/page.tsx` — rewritten as the index (no more redirect).
+- `app/loading.tsx` — added (root segment had none before).
+- `app/not-found.tsx`, `app/category/[slug]/not-found.tsx` — recovery links repointed to `/`
+  ("Browse categories"), `getCategories()`/`first` lookups removed.
+- `app/item/[sku]/not-found.tsx` — left unchanged as planned (still links to the first category;
+  out of the spec's stated scope).
+- `app/globals.css` — added `.card__count` and `.skeleton--card-compact`.
+- `CLAUDE.md` — updated the "one test" example to name a test that still exists.
+- `tests/smoke.spec.ts` — replaced the root-redirect test, added a card-click-through test, updated
+  both not-found tests to assert the recovery link lands on `/`.
+- Masthead — left as a plain wordmark, no home link added, per the spec's explicit non-goal.
+
+Verification results:
+1. `npm run typecheck` — passed, zero errors.
+2. `npm run lint` — passed, zero errors.
+3. `npm run build` — succeeded; route table confirms `/` is now a static page (`○`), not a redirect.
+4. `npm test` — all 8 Playwright tests passed, including the new/updated ones.
+5. `site-reviewer` — no BLOCKING findings. One ADVISORY: `CategoryCard`'s empty-category tag reused
+   `badge--out` (the item "out of stock" class), conflating two different meanings. Fixed: added a
+   distinct `.badge--empty` rule in `app/globals.css` and switched the card to use it. Re-ran
+   typecheck/lint/tests after the fix — all still pass.
+6. Manual browser check — done against a production build (`npm run build && npm run start -- --port
+   3100`) via the Playwright MCP browser: `/` renders the eyebrow, `h1`, subtitle, and all three
+   category cards with correct names/blurbs/counts in catalogue order; clicking a card navigates to
+   its category page; an unknown category slug and an unrouted path both show their not-found state,
+   and clicking "Browse categories" from each lands back on `/`. The only console error observed
+   (`favicon.ico` 404) is pre-existing and unrelated — no favicon file exists anywhere in the repo.

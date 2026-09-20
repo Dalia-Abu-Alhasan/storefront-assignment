@@ -42,9 +42,28 @@ test("the detail page renders its header, a house-formatted price and date", asy
   expect(errors).toEqual([]);
 });
 
-test("the root redirects to the seeded category", async ({ page }) => {
+test("the root lists every category and no longer redirects", async ({ page }) => {
+  const errors = watchConsole(page);
+
   await page.goto("/");
+
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator(".page-header__eyebrow")).toHaveText("Categories");
+  await expect(page.getByRole("heading", { level: 1 })).not.toBeEmpty();
+  await expect(page.locator(".page-header__subtitle")).not.toBeEmpty();
+
+  await expect(page.locator(".card")).toHaveCount(3);
+  await expect(page.locator(".card__name")).toHaveText(["Desk Tools", "Board games", "Lighting"]);
+  await expect(page.locator(".card__count")).toHaveText(["4 items", "4 items", "4 items"]);
+
+  expect(errors).toEqual([]);
+});
+
+test("activating a category card on the index navigates to that category", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".card__link").first().click();
   await expect(page).toHaveURL(new RegExp(`${CATEGORY_PATH}$`));
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Desk Tools");
 });
 
 test("an unknown item shows the not-found state, not a crash", async ({ page }) => {
@@ -64,14 +83,18 @@ test("the rates route answers with the standard envelope shape", async ({ reques
   }
 });
 
-test("an unknown category shows the not-found state", async ({ page }) => {
+test("an unknown category shows the not-found state and recovers to the index", async ({ page }) => {
   await page.goto("/category/does-not-exist");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("No such category");
+  await page.getByRole("link", { name: "Browse categories" }).click();
+  await expect(page).toHaveURL(/\/$/);
 });
 
-test("an unrouted address shows the root not-found state", async ({ page }) => {
+test("an unrouted address shows the root not-found state and recovers to the index", async ({ page }) => {
   await page.goto("/nothing-here");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "There is nothing at this address",
   );
+  await page.getByRole("link", { name: "Browse categories" }).click();
+  await expect(page).toHaveURL(/\/$/);
 });
