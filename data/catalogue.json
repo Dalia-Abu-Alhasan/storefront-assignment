@@ -1,0 +1,75 @@
+{
+  "categories": [
+    {
+      "slug": "desk-tools",
+      "name": "Desk Tools",
+      "blurb": "Precision instruments for people who measure twice.",
+      "items": [
+        {
+          "sku": "DT-0001",
+          "name": "Machined Aluminium Ruler",
+          "blurb": "A 300 mm rule milled from a single billet.",
+          "description": "Milled from a single billet of 6061 aluminium and anodised to a soft graphite finish. The engraved scale is filled with white epoxy so it stays legible after years of desk use. Non-slip cork backing keeps it where you put it.",
+          "priceEur": 24.5,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-15",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Machined aluminium ruler lying flat on a plain background",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "DT-0002",
+          "name": "Brass Pen Rest",
+          "blurb": "A small weight that keeps a pen exactly where you left it.",
+          "description": "Turned from solid brass and left unlacquered, so it darkens slowly with handling. The shallow groove holds anything from a fine liner to a fountain pen without rolling. Felt base, 180 grams.",
+          "priceEur": 18.0,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-08-28",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Small brass pen rest photographed from a low angle",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "DT-0003",
+          "name": "Folding Steel Bookstand",
+          "blurb": "Holds a reference book open at a readable angle.",
+          "description": "Powder-coated spring steel that folds flat to eleven millimetres and opens to three fixed angles. Rated for a hardback of up to two kilograms, with silicone pads front and back so nothing slides or scuffs.",
+          "priceEur": 42.0,
+          "currency": "EUR",
+          "inStock": false,
+          "addedOn": "2026-07-04",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Folding steel bookstand shown open at its middle angle",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "DT-0004",
+          "name": "Cork Desk Mat",
+          "blurb": "Six millimetres of cork, cut to a generous working size.",
+          "description": "Pressed from granulated Portuguese cork and sealed with a water-based finish that resists coffee rings. Warm underhand, quiet under a keyboard, and light enough to roll up when the desk needs clearing.",
+          "priceEur": 36.75,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-02",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Rectangular cork desk mat viewed from directly above",
+            "width": 800,
+            "height": 600
+          }
+        }
+      ]
+    }
+  ]
+}
