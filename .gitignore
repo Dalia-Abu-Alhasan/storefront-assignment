@@ -22,6 +22,9 @@ dist/
 *.tsbuildinfo
 next-env.d.ts
 
+# claude code local settings (per-user, not shared)
+.claude/settings.local.json
+
 # misc
 .DS_Store
 *.pem

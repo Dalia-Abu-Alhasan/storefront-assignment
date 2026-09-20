@@ -1,12 +1,14 @@
+import { PageHeader } from "@/components/PageHeader";
+
 export default function ItemLoading() {
   return (
     <>
-      <div className="page-header">
-        <div className="skeleton skeleton--line" style={{ width: "7rem" }} />
-        <div className="skeleton skeleton--line" style={{ width: "22rem", height: "2.2rem" }} />
-        <div className="skeleton skeleton--line" style={{ width: "30rem" }} />
-      </div>
-      <div className="detail">
+      <PageHeader
+        eyebrow="Item"
+        title="Loading item"
+        subtitle="Reading the catalogue. The details appear here in a moment."
+      />
+      <div className="detail" aria-busy="true">
         <div className="skeleton" style={{ height: "22rem" }} />
         <div>
           <div className="skeleton skeleton--line" style={{ width: "10rem", height: "2rem" }} />
