@@ -86,6 +86,47 @@ could not verify it, say what you could not check and why.
 - Types in `lib/catalogue.ts` and the checks in `assertCatalogue()` match the data actually
   present.
 
+## Added rules
+
+Each of these exists because something went wrong. The incident is recorded so a future reader can
+tell whether the rule still earns its place.
+
+### A. A loading segment must render a real `<PageHeader>`, not a skeleton of one
+
+Check that `loading.tsx` imports `PageHeader` and renders it with a literal `eyebrow`, `title` and
+`subtitle`. A `<div className="page-header">` holding skeleton bars is BLOCKING, however close it
+looks.
+
+> **Incident — 20 Sep 2026, writing the house-style skill.** Both `loading.tsx` files faked the
+> header with skeleton `<div>`s carrying `page-header` classes. It rendered convincingly, so no
+> browser pass caught it, and there was no `<h1>` on screen during loading. The rule "every page,
+> including error pages" was broken by the very files that declared it. Found only by reading the
+> skill against the code, which is exactly the kind of gap a visual check misses.
+
+### B. `useEffect` must not call `setState` synchronously in its body
+
+Check every `useEffect` in a client component. Setting state directly in the effect body is
+BLOCKING; state must be set in a promise callback or an event handler. Also check the effect has a
+cleanup guard so a resolved fetch cannot set state after the inputs changed.
+
+> **Incident — 20 Sep 2026, scaffolding `ConvertedPrice`.** The first draft called `setStatus`
+> at the top of the effect to enter the loading state. `react-hooks/set-state-in-effect` is an
+> error, not a warning, so lint failed and the scaffold could not be committed until it was
+> restructured. Typecheck had passed cleanly, so nothing before lint caught it.
+
+### C. A client component may call our own route handler, never an upstream host
+
+Check every `fetch` in a `"use client"` file. The URL must be a same-origin path beginning `/api/`.
+Any absolute URL to an external host is BLOCKING, even without a visible key — it is one commit
+away from becoming a leak.
+
+> **Incident — 20 Sep 2026, wiring the currency conversion.** A server component cannot fetch its
+> own route handler without an absolute URL, so the detail page had to hand the call to a client
+> component. The obvious shortcut at that moment was to call exchangerate-api.com straight from the
+> client, which would have put `EXCHANGE_RATE_API_KEY` in the browser bundle and failed the
+> assignment outright. The rule exists to make that shortcut a finding rather than a judgement call
+> under time pressure.
+
 ## Output
 
 Report in exactly two groups, most severe first. Omit a group that is empty.
