@@ -70,6 +70,148 @@
           }
         }
       ]
+    },
+    {
+      "slug": "board-games",
+      "name": "Board games",
+      "blurb": "Games that earn their shelf space and survive a hundred plays.",
+      "items": [
+        {
+          "sku": "BG-0001",
+          "name": "Hexwood Trading Company",
+          "blurb": "A two-hour trading game for three to five players.",
+          "description": "A route-building game across a forested island, played on interlocking hex tiles that shuffle into a new map each time. The wooden goods markers are screen-printed rather than stickered, so they survive shuffling. Teaches in about ten minutes and lasts around two hours.",
+          "priceEur": 44.0,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-18",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Board game box beside a partly assembled hex tile map",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "BG-0002",
+          "name": "Lantern Street",
+          "blurb": "A quiet tile-laying game for two.",
+          "description": "Two players build adjacent streets from the same shrinking pool of tiles, each trying to light more windows than the other. Plays in twenty-five minutes and fits in a coat pocket. The tiles are 2 mm greyboard with a linen finish.",
+          "priceEur": 27.5,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-11",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Small two-player tile game with tiles laid out in a street pattern",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "BG-0003",
+          "name": "The Longest Winter",
+          "blurb": "A cooperative survival game for one to four players.",
+          "description": "A cooperative game about rationing supplies through a winter that lasts twelve rounds. Every player sees the same dwindling stores, and the game is lost together or not at all. Includes a solo mode that changes the card deck rather than the rules.",
+          "priceEur": 58.25,
+          "currency": "EUR",
+          "inStock": false,
+          "addedOn": "2026-08-22",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Cooperative board game laid out mid-game with resource cards and tokens",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "BG-0004",
+          "name": "Pocket Draughts Set",
+          "blurb": "A magnetic travel set in a folding walnut case.",
+          "description": "A folding walnut case that opens into a full draughts board, with magnetic pieces that stay put on a train table. Closed it is roughly the size of a paperback. The hinge is brass and replaceable.",
+          "priceEur": 32.0,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-07-30",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Folding walnut draughts set open to show the magnetic board and pieces",
+            "width": 800,
+            "height": 600
+          }
+        }
+      ]
+    },
+    {
+      "slug": "lighting",
+      "name": "Lighting",
+      "blurb": "Lamps that light the work, not the whole room.",
+      "items": [
+        {
+          "sku": "LI-0001",
+          "name": "Counterweight Desk Lamp",
+          "blurb": "A steel task lamp balanced by weight rather than springs.",
+          "description": "A task lamp that holds its position with a cast-iron counterweight instead of springs, so it never creeps downward over an afternoon. The head tilts through ninety degrees and the arm reaches 620 mm. Takes a standard E27 bulb, which is not included.",
+          "priceEur": 89.0,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-16",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Steel desk lamp with a counterweighted arm extended over a work surface",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "LI-0002",
+          "name": "Ribbed Glass Shade",
+          "blurb": "A replacement shade for a standard E27 fitting.",
+          "description": "Pressed ribbed glass that scatters a bare filament into something you can sit across from. Fits any standard E27 shade ring, 180 mm across at the mouth. Sold on its own, without flex or fitting.",
+          "priceEur": 34.5,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-09-05",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Ribbed clear glass lamp shade photographed against a plain backdrop",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "LI-0003",
+          "name": "Brass Picture Light",
+          "blurb": "A slim wall light for a single frame.",
+          "description": "An unlacquered brass bar that throws an even wash across a frame up to about 700 mm wide, and darkens with handling the way the pen rest does. Hard-wired, so it wants an electrician unless there is already a wall box. Warm white LED, not replaceable.",
+          "priceEur": 124.0,
+          "currency": "EUR",
+          "inStock": false,
+          "addedOn": "2026-08-14",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Slim brass picture light mounted above an empty picture frame",
+            "width": 800,
+            "height": 600
+          }
+        },
+        {
+          "sku": "LI-0004",
+          "name": "Clip-On Shelf Light",
+          "blurb": "A short LED bar that clamps to a shelf edge.",
+          "description": "A 300 mm aluminium bar with a sprung clamp that grips a shelf up to 30 mm thick, so nothing is drilled. Runs from USB-C and dims through three steps by tapping the end cap. Cable is 1.8 m, braided.",
+          "priceEur": 41.75,
+          "currency": "EUR",
+          "inStock": true,
+          "addedOn": "2026-07-21",
+          "image": {
+            "src": "/images/placeholder.svg",
+            "alt": "Aluminium LED bar clipped to the underside of a wooden shelf",
+            "width": 800,
+            "height": 600
+          }
+        }
+      ]
     }
   ]
 }
