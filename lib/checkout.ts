@@ -8,6 +8,10 @@
  * reference rather than the value.
  */
 
+// Type-only, so nothing here pulls `lib/catalogue.ts` — and its import-time
+// `assertCatalogue()` — into a client bundle.
+import type { ItemImage } from "@/lib/catalogue";
+
 /** Bumped when the stored shape changes. A mismatch discards the stored cart. */
 export const CART_VERSION = 1;
 
@@ -23,6 +27,21 @@ export const ORDER_KEY = "aurora.order";
 export type CartLine = { sku: string; quantity: number };
 
 export type StoredCart = { version: number; items: CartLine[] };
+
+/**
+ * What the cart page needs to know about an item. The server component builds
+ * the table and hands it to the client list, so the cart prices itself without
+ * a request and `/cart` stays statically generated.
+ */
+export type CartItemInfo = {
+  name: string;
+  priceEur: number;
+  currency: "EUR";
+  inStock: boolean;
+  image: ItemImage;
+};
+
+export type CartLookup = Record<string, CartItemInfo>;
 
 export type OrderLine = {
   sku: string;

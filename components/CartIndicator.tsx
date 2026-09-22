@@ -13,16 +13,12 @@ import { countItems, useCart } from "@/lib/cart";
  * region and the count might never announce. The loading branch shows a
  * skeleton rather than a literal `0`, because a `0` that becomes `3` two frames
  * later reads as an empty cart that was not empty.
- *
- * `prefetch={false}` is temporary: the masthead is on every page, so until
- * `/cart` exists the default prefetch 404s on every page load. Remove it with
- * the cart page.
  */
 export function CartIndicator() {
   const cart = useCart();
 
   return (
-    <Link className="masthead__cart" href="/cart" aria-live="polite" prefetch={false}>
+    <Link className="masthead__cart" href="/cart" aria-live="polite">
       Cart{" "}
       {cart.status === "loading" ? (
         <span

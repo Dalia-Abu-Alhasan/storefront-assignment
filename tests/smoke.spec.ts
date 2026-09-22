@@ -150,3 +150,127 @@ test("an out-of-stock item cannot be added to the cart", async ({ page }) => {
 
   expect(errors).toEqual([]);
 });
+
+const CART_PATH = "/cart";
+
+/** Puts a cart in browser storage before the page under test loads. */
+function seedCart(page: Page, items: { sku: string; quantity: number }[]) {
+  return page.addInitScript(
+    (payload) => window.localStorage.setItem("aurora.cart", payload),
+    JSON.stringify({ version: 1, items }),
+  );
+}
+
+test("the cart page lists what was added, with a subtotal", async ({ page }) => {
+  const errors = watchConsole(page);
+
+  await seedCart(page, [{ sku: "DT-0001", quantity: 2 }]);
+  await page.goto(CART_PATH);
+
+  await expect(page.locator(".page-header__eyebrow")).toHaveText("Order");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your cart");
+
+  await expect(page.locator(".cart__line")).toHaveCount(1);
+  await expect(page.locator(".cart__name")).toHaveText("Machined Aluminium Ruler");
+  await expect(page.locator(".cart__line-total")).toHaveText("49.00 EUR");
+  await expect(page.locator(".cart__subtotal-amount")).toHaveText("49.00 EUR");
+  await expect(page.locator(".cart__subtotal-amount")).toHaveText(/^\d+\.\d{2} EUR$/);
+
+  expect(errors).toEqual([]);
+});
+
+test("changing a quantity updates the line total and the subtotal", async ({ page }) => {
+  await seedCart(page, [{ sku: "DT-0001", quantity: 2 }]);
+  await page.goto(CART_PATH);
+
+  await page.getByRole("button", { name: "One more Machined Aluminium Ruler" }).click();
+  await expect(page.locator(".cart__quantity-value")).toHaveText("3");
+  await expect(page.locator(".cart__line-total")).toHaveText("73.50 EUR");
+  await expect(page.locator(".cart__subtotal-amount")).toHaveText("73.50 EUR");
+  await expect(page.locator(".masthead__cart-count")).toHaveText("3");
+
+  const fewer = page.getByRole("button", { name: "One fewer Machined Aluminium Ruler" });
+  await fewer.click();
+  await fewer.click();
+  await expect(page.locator(".cart__quantity-value")).toHaveText("1");
+  await expect(fewer).toBeDisabled();
+  await expect(page.locator(".cart__subtotal-amount")).toHaveText("24.50 EUR");
+});
+
+test("removing the last line shows the cart empty state", async ({ page }) => {
+  await seedCart(page, [{ sku: "DT-0001", quantity: 1 }]);
+  await page.goto(CART_PATH);
+
+  await page.getByRole("button", { name: "Remove Machined Aluminium Ruler" }).click();
+
+  await expect(page.locator(".state--empty")).toBeVisible();
+  await expect(page.locator(".state__title")).toHaveText("Your cart is empty");
+  await expect(page.locator(".masthead__cart-count")).toHaveText("0");
+});
+
+test("the cart empty state recovers to the categories index", async ({ page }) => {
+  await page.goto(CART_PATH);
+
+  await expect(page.locator(".state__title")).toHaveText("Your cart is empty");
+  await page.getByRole("link", { name: "Browse categories" }).click();
+
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).not.toBeEmpty();
+});
+
+test("a cart line whose item is no longer sold is marked unavailable and blocks checkout", async ({
+  page,
+}) => {
+  await seedCart(page, [
+    { sku: "DT-0001", quantity: 1 },
+    { sku: "DT-0003", quantity: 1 },
+    { sku: "XX-9999", quantity: 1 },
+  ]);
+  await page.goto(CART_PATH);
+
+  await expect(page.locator(".cart__line")).toHaveCount(3);
+  // Both blocked branches: gone from the catalogue, and present but out of stock.
+  await expect(page.locator(".cart__gone")).toHaveText([
+    /out of stock/,
+    /no longer in the catalogue/,
+  ]);
+
+  // Blocked lines are excluded from the subtotal, not silently priced at zero.
+  await expect(page.locator(".cart__subtotal-amount")).toHaveText("24.50 EUR");
+  await expect(page.getByRole("button", { name: "Proceed to checkout" })).toBeDisabled();
+
+  await page.getByRole("button", { name: "Remove unavailable" }).click();
+
+  await expect(page.locator(".cart__line")).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Proceed to checkout" })).toBeVisible();
+});
+
+test("a cart says so when the browser is blocking storage, and still works", async ({ page }) => {
+  // Every storage call throws, as it does in a locked-down or private window.
+  await page.addInitScript(() => {
+    const blocked = () => {
+      throw new Error("storage is blocked");
+    };
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      value: { getItem: blocked, setItem: blocked, removeItem: blocked },
+    });
+  });
+
+  await page.goto(ITEM_PATH);
+  await page.getByRole("button", { name: "Add to cart" }).click();
+
+  // The add still applies in memory, and the item page says it will not persist.
+  await expect(page.locator(".masthead__cart-count")).toHaveText("1");
+  await expect(page.locator(".add-to-cart__note")).toHaveText(/blocking storage/);
+
+  // A soft navigation keeps the store alive, so the line reaches the cart page.
+  await page.getByRole("link", { name: /^Cart/ }).click();
+  await expect(page).toHaveURL(new RegExp(`${CART_PATH}$`));
+
+  await expect(page.locator(".cart__line")).toHaveCount(1);
+  await expect(page.locator(".state--error .state__title")).toHaveText(
+    "This cart will not be saved",
+  );
+  await expect(page.locator(".cart__subtotal-amount")).toHaveText("24.50 EUR");
+});

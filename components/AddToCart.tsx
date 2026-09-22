@@ -39,7 +39,7 @@ export function AddToCart({ sku, inStock }: { sku: string; inStock: boolean }) {
       ? `That is the most of one item a cart can hold (${MAX_PER_LINE}).`
       : outcome;
 
-  // The only place this can be said until the cart page exists.
+  // The cart page says this too; said here so it is not news at checkout.
   const storageNote =
     cart.status === "unavailable"
       ? "Your browser is blocking storage, so the cart will not survive a reload."

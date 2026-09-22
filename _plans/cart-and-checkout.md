@@ -47,15 +47,22 @@ See spec.
 | Phase | Name | Status |
 |---|---|---|
 | 1 | Cart foundation | Done |
-| 2 | The cart page | Not started |
+| 2 | The cart page | Done |
 | 3 | Checkout and the order handler | Not started |
 | 4 | Confirmation, and closing out | Not started |
 
-**Current state of the working tree** — Clean. Phase 1 is committed. `lib/checkout.ts`,
-`lib/cart.ts`, `components/CartIndicator.tsx` and `components/AddToCart.tsx` are new;
-`app/layout.tsx`, `app/item/[sku]/page.tsx`, `app/globals.css` and `tests/smoke.spec.ts` are
-modified; `.claude/launch.json` was added so the dev server can be driven for the browser checks.
-`main` is at `a60d90c` (the categories-index merge).
+**Current state of the working tree** — Clean. Phases 1 and 2 are committed. New:
+`lib/checkout.ts`, `lib/cart.ts`, `components/CartIndicator.tsx`, `components/AddToCart.tsx`,
+`components/CartLines.tsx`, `app/cart/{page,loading,error,not-found}.tsx`, `.claude/launch.json`.
+Modified: `app/layout.tsx`, `app/item/[sku]/page.tsx`, `components/ConvertedPrice.tsx`,
+`app/globals.css`, `tests/smoke.spec.ts`. 17 Playwright cases pass. `main` is at `a60d90c` (the
+categories-index merge).
+
+**Phase 3 starts here.** Its prerequisite (phase 2) is done and nothing about it has been started —
+no `lib/errors.ts`, no `app/api/checkout/`, no `app/checkout/`, and the four documents that
+enumerate the error codes are untouched. One carried-over chore belongs to it: remove
+`prefetch={false}` from the "Proceed to checkout" `<Link>` in `components/CartLines.tsx` once
+`/checkout` is routed, the way phase 2 removed it from `CartIndicator`.
 
 ## Action required
 
@@ -281,19 +288,19 @@ quantities can be changed and lines removed.
 
 ### Tasks
 
-- [ ] Create `app/cart/page.tsx` — server component holding the header and the catalogue lookup.
-- [ ] Create `app/cart/loading.tsx`, `app/cart/error.tsx`, `app/cart/not-found.tsx` — all three;
+- [x] Create `app/cart/page.tsx` — server component holding the header and the catalogue lookup.
+- [x] Create `app/cart/loading.tsx`, `app/cart/error.tsx`, `app/cart/not-found.tsx` — all three;
       CLAUDE.md requires every segment to own all three.
-- [ ] Create `components/CartLines.tsx` (`"use client"`) — the four states, quantity controls,
+- [x] Create `components/CartLines.tsx` (`"use client"`) — the four states, quantity controls,
       removal, subtotal. **[complex]** (depends on `app/cart/page.tsx` for its props)
-  - [ ] Loading, empty, error and success branches
-  - [ ] Quantity up/down bounded at 1 and `MAX_PER_LINE`, with the out-of-range control disabled
-  - [ ] Per-line removal, and a "remove unavailable" action
-  - [ ] Unavailable-line handling: excluded from the subtotal, blocks checkout
-  - [ ] Subtotal in integer cents, rendered through `formatMoney`
-- [ ] Modify `components/ConvertedPrice.tsx` — accept an optional `className`.
-- [ ] Modify `app/globals.css` — cart line layout, quantity control, subtotal block.
-- [ ] Extend `tests/smoke.spec.ts` with the phase-2 cases listed in Technical details.
+  - [x] Loading, empty, error and success branches
+  - [x] Quantity up/down bounded at 1 and `MAX_PER_LINE`, with the out-of-range control disabled
+  - [x] Per-line removal, and a "remove unavailable" action
+  - [x] Unavailable-line handling: excluded from the subtotal, blocks checkout
+  - [x] Subtotal in integer cents, rendered through `formatMoney`
+- [x] Modify `components/ConvertedPrice.tsx` — accept an optional `className`.
+- [x] Modify `app/globals.css` — cart line layout, quantity control, subtotal block.
+- [x] Extend `tests/smoke.spec.ts` with the phase-2 cases listed in Technical details.
 
 ### Technical details
 
@@ -602,6 +609,8 @@ existing suite.
 |---|---|---|
 | 1 | `components/CartIndicator.tsx` passes `prefetch={false}` to its `<Link href="/cart">` | The masthead renders on every page, so with `/cart` not yet routed Next's default prefetch 404s on every page load and the suite's `watchConsole` helper fails two of the new tests on a console error the feature does not actually have. It is temporary: phase 2 creates the route and removes the prop. A comment in the file says so. |
 | 1 | `.claude/launch.json` added | Not in the plan, but **Action required** calls for browser checks after phases 1 and 4 and the Browser pane needs a named dev-server configuration to start one. |
+| 2 | The same `prefetch={false}` now sits on the cart page's "Proceed to checkout" `<Link>` | Same reason, one route along: `/checkout` arrives in phase 3. Phase 2 removed the phase-1 instance from `CartIndicator` as promised. Phase 3 removes this one. |
+| 2 | The cart's storage-`unavailable` error state carries no action | House rule 2 says an error state offers a retry. A retry cannot un-block browser storage, so the guidance names the two real ways out — allow storage, or order now — and the segment-level retry stays in `app/cart/error.tsx`. Recorded here rather than adding a control that could not work. |
 
 ## Session log
 
@@ -609,3 +618,4 @@ existing suite.
 |---|---|---|
 | 2026-09-22 | — | Plan written from the plan-mode session. Spec committed as `99e4d2c`. No code written yet. |
 | 2026-09-22 | 1 | Phase 1 built and committed. `lib/checkout.ts` (contract), `lib/cart.ts` (the `useSyncExternalStore` store, no `useEffect` anywhere), `CartIndicator`, `AddToCart`, masthead flex layout, `.button:disabled`, and the missing `.state--empty` / `.state--loading` rules. Three new Playwright cases; 11 pass. Typecheck, lint and build clean. Browser check done: adding on `/item/DT-0001` moved the masthead count to 1 then 2 with no navigation and no console output, and the count survived a navigation — so the store is one shared module instance across the layout and page chunks, which was the risk the check existed for. One deviation recorded (`prefetch={false}`). `site-reviewer` run: no BLOCKING findings. Acted on three advisories — `load()` no longer empties an in-memory cart when storage is unreadable (latent, but phase 3's `reload()` on submit would have hit it), the add confirmation now carries the new quantity so the live region has something to announce on a repeat add and says when storage is blocked, and the masthead count is now asserted on the index and a category page too. |
+| 2026-09-22 | 2 | Phase 2 built and committed. `/cart` with all four segment files, `CartLines` covering the four states, quantity controls bounded at 1 and `MAX_PER_LINE`, per-line and bulk removal, unavailable lines excluded from the subtotal and blocking checkout, subtotal summed in integer cents, and `ConvertedPrice` reused for the approximation via its new `className` prop. Phase 1's `prefetch={false}` came off `CartIndicator`. Six new Playwright cases; 17 pass. Typecheck, lint and build clean, and `/cart` is in `.next/prerender-manifest.json`. Browser check: two real lines priced and totalled correctly, and a seeded cart of one good line, one out-of-stock item and one sku that is not in the catalogue showed both blocked branches, held the subtotal at the good line only, and disabled the checkout control — no console output throughout. `site-reviewer`: no BLOCKING findings. Acted on three advisories — per-item accessible names on the remove buttons (they were all called "Remove", which was also a latent Playwright strict-mode trap), coverage for the out-of-stock branch, and a new case that blocks `localStorage` outright and proves the cart still works in memory and says it will not be saved. The fourth is recorded under **Deviations**. Stopping here: phase 3 runs in a separate session at the owner's request. |
