@@ -61,11 +61,46 @@ a {
 }
 
 .masthead__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   max-width: 68rem;
   margin: 0 auto;
   padding: 1.25rem 1.5rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+.masthead__wordmark {
+  letter-spacing: -0.01em;
+}
+
+.masthead__cart {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  color: var(--ink-muted);
+  border-bottom: 1px solid transparent;
+}
+
+.masthead__cart:hover,
+.masthead__cart:focus-visible {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.masthead__cart-count {
+  display: inline-block;
+  min-width: 1.6rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 /* --- page header ------------------------------------------------------- */
@@ -247,6 +282,18 @@ a {
   border-color: var(--warn);
 }
 
+/* `StateMessage` has always emitted these two; only `--error` had a rule. */
+.state--empty {
+  border-style: dashed;
+  border-color: var(--border);
+}
+
+.state--loading {
+  border-style: dashed;
+  border-color: var(--border);
+  color: var(--ink-muted);
+}
+
 .state__title {
   margin: 0 0 0.4rem;
   font-weight: 600;
@@ -273,9 +320,39 @@ a {
   cursor: pointer;
 }
 
+.button:hover {
+  filter: brightness(1.08);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  border-color: var(--border);
+  background: var(--border);
+  color: var(--ink-muted);
+  cursor: not-allowed;
+  filter: none;
+}
+
 .button--quiet {
   background: transparent;
   color: var(--accent);
+}
+
+/* --- add to cart ------------------------------------------------------- */
+
+.add-to-cart {
+  margin: 1.1rem 0 1.4rem;
+}
+
+.add-to-cart__note {
+  margin: 0.55rem 0 0;
+  min-height: 1.4rem;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
 }
 
 /* --- loading skeletons ------------------------------------------------- */
@@ -319,4 +396,168 @@ a {
   margin: 0 0 1.1rem;
   color: var(--ink-muted);
   font-size: 0.92rem;
+}
+
+/* --- cart -------------------------------------------------------------- */
+
+.cart {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.cart__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.cart__line {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+@media (min-width: 40rem) {
+  .cart__line {
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  }
+}
+
+.cart__image {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.cart__image--missing {
+  aspect-ratio: 4 / 3;
+  background: var(--border);
+}
+
+.cart__name {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cart__name a:hover {
+  color: var(--accent);
+}
+
+.cart__unit {
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cart__gone {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--warn);
+}
+
+.cart__quantity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.15rem;
+}
+
+.cart__step {
+  min-width: 2rem;
+  padding: 0.15rem 0.5rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.cart__step:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.cart__step:disabled {
+  color: var(--ink-muted);
+  cursor: not-allowed;
+}
+
+.cart__quantity-value {
+  min-width: 2rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.cart__line-end {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 40rem) {
+  .cart__line-end {
+    grid-column: auto;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+}
+
+.cart__line-total {
+  margin: 0;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart__summary {
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: end;
+  text-align: right;
+}
+
+.cart__subtotal {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+
+.cart__subtotal-amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.cart__converted {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+}
+
+.cart__tally {
+  margin: 0 0 0.6rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
 }

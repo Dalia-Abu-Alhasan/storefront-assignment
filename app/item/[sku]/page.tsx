@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AddToCart } from "@/components/AddToCart";
 import { ConvertedPrice } from "@/components/ConvertedPrice";
 import { PageHeader } from "@/components/PageHeader";
 import { getCategories, getItemBySku } from "@/lib/catalogue";
@@ -52,6 +53,8 @@ export default async function ItemPage({ params }: PageProps) {
           <p className={`badge ${item.inStock ? "badge--in" : "badge--out"}`}>
             {item.inStock ? "In stock" : "Out of stock"}
           </p>
+
+          <AddToCart sku={item.sku} inStock={item.inStock} />
 
           <p className="detail__description">{item.description}</p>
 

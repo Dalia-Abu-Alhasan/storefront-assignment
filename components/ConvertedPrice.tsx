@@ -35,7 +35,16 @@ async function readRate(target: string): Promise<Status> {
  * server-side, inside that route. Degrades to EUR-only when no rate is
  * available, so the price is never missing.
  */
-export function ConvertedPrice({ priceEur, target }: { priceEur: number; target: string }) {
+export function ConvertedPrice({
+  priceEur,
+  target,
+  className = "detail__converted",
+}: {
+  priceEur: number;
+  target: string;
+  /** The cart reuses this for its subtotal, where the item-detail class is wrong. */
+  className?: string;
+}) {
   const [status, setStatus] = useState<Status>({ kind: "loading" });
 
   useEffect(() => {
@@ -55,7 +64,7 @@ export function ConvertedPrice({ priceEur, target }: { priceEur: number; target:
 
   if (status.kind === "loading") {
     return (
-      <p className="detail__converted" aria-live="polite">
+      <p className={className} aria-live="polite">
         <span className="skeleton skeleton--line" style={{ width: "9rem", display: "inline-block" }} />
       </p>
     );
@@ -63,7 +72,7 @@ export function ConvertedPrice({ priceEur, target }: { priceEur: number; target:
 
   if (status.kind === "error") {
     return (
-      <p className="detail__converted" role="status">
+      <p className={className} role="status">
         <span>Priced in EUR only — {status.message}</span>{" "}
         <button type="button" className="button button--quiet" onClick={retry}>
           Retry
@@ -73,7 +82,7 @@ export function ConvertedPrice({ priceEur, target }: { priceEur: number; target:
   }
 
   return (
-    <p className="detail__converted">
+    <p className={className}>
       About {formatMoney(priceEur * status.rate.rate, status.rate.target)} at today&rsquo;s rate.
     </p>
   );
