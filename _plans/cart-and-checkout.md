@@ -5,7 +5,7 @@
 | **Slug** | `cart-and-checkout` |
 | **Spec** | `_specs/cart-and-checkout.md` |
 | **Branch** | `claude/feature/cart-and-checkout` |
-| **Status** | Not started |
+| **Status** | In progress |
 | **Created** | 2026-09-22 |
 | **Updated** | 2026-09-22 |
 
@@ -46,14 +46,16 @@ See spec.
 
 | Phase | Name | Status |
 |---|---|---|
-| 1 | Cart foundation | Not started |
+| 1 | Cart foundation | Done |
 | 2 | The cart page | Not started |
 | 3 | Checkout and the order handler | Not started |
 | 4 | Confirmation, and closing out | Not started |
 
-**Current state of the working tree** — Clean. The only change on this branch so far is commit
-`99e4d2c`, which added `_specs/cart-and-checkout.md`. No source file has been touched. `main` is at
-`a60d90c` (the categories-index merge).
+**Current state of the working tree** — Clean. Phase 1 is committed. `lib/checkout.ts`,
+`lib/cart.ts`, `components/CartIndicator.tsx` and `components/AddToCart.tsx` are new;
+`app/layout.tsx`, `app/item/[sku]/page.tsx`, `app/globals.css` and `tests/smoke.spec.ts` are
+modified; `.claude/launch.json` was added so the dev server can be driven for the browser checks.
+`main` is at `a60d90c` (the categories-index merge).
 
 ## Action required
 
@@ -75,26 +77,26 @@ running count on every page. There is not yet anywhere to view the cart.
 
 ### Tasks
 
-- [ ] Create `lib/checkout.ts` — the directive-free shared contract (constants and types), imported
+- [x] Create `lib/checkout.ts` — the directive-free shared contract (constants and types), imported
       by the client store, the client components and the route handler alike.
-- [ ] Create `lib/cart.ts` — the `"use client"` cart store, to the contract in Technical details.
+- [x] Create `lib/cart.ts` — the `"use client"` cart store, to the contract in Technical details.
       **[complex]** (depends on `lib/checkout.ts`)
-  - [ ] Snapshot tri-state and the two frozen module-level constants
-  - [ ] `subscribe` / `getSnapshot` / `getServerSnapshot` / `useCart`
-  - [ ] `readStorage`, `discard`, `readItems` — every failure path returning a snapshot, never throwing
-  - [ ] `writeStorage` and the single `commit` write path
-  - [ ] Mutators `add`, `setQuantity`, `remove`, `clear`, `reload`, and the `countItems` selector
-- [ ] Create `components/CartIndicator.tsx` (`"use client"`) — a link to `/cart` with the item count,
+  - [x] Snapshot tri-state and the two frozen module-level constants
+  - [x] `subscribe` / `getSnapshot` / `getServerSnapshot` / `useCart`
+  - [x] `readStorage`, `discard`, `readItems` — every failure path returning a snapshot, never throwing
+  - [x] `writeStorage` and the single `commit` write path
+  - [x] Mutators `add`, `setQuantity`, `remove`, `clear`, `reload`, and the `countItems` selector
+- [x] Create `components/CartIndicator.tsx` (`"use client"`) — a link to `/cart` with the item count,
       rendering a skeleton and never a literal `0` while the snapshot is loading.
-- [ ] Create `components/AddToCart.tsx` (`"use client"`) — add control for the item detail page,
+- [x] Create `components/AddToCart.tsx` (`"use client"`) — add control for the item detail page,
       disabled with a reason when out of stock or at the per-line cap.
-- [ ] Modify `app/layout.tsx` — render `<CartIndicator />` inside `.masthead__inner`. Do **not** add
+- [x] Modify `app/layout.tsx` — render `<CartIndicator />` inside `.masthead__inner`. Do **not** add
       a `"use client"` directive to the layout.
-- [ ] Modify `app/item/[sku]/page.tsx` — render `<AddToCart sku={item.sku} inStock={item.inStock} />`
+- [x] Modify `app/item/[sku]/page.tsx` — render `<AddToCart sku={item.sku} inStock={item.inStock} />`
       beside the existing stock badge.
-- [ ] Modify `app/globals.css` — masthead layout, cart indicator, `.button:disabled`, and the two
+- [x] Modify `app/globals.css` — masthead layout, cart indicator, `.button:disabled`, and the two
       missing state rules.
-- [ ] Extend `tests/smoke.spec.ts` with the phase-1 cases listed in Technical details.
+- [x] Extend `tests/smoke.spec.ts` with the phase-1 cases listed in Technical details.
 
 ### Technical details
 
@@ -596,10 +598,14 @@ existing suite.
 
 ## Deviations
 
-None so far.
+| Phase | Deviation | Why |
+|---|---|---|
+| 1 | `components/CartIndicator.tsx` passes `prefetch={false}` to its `<Link href="/cart">` | The masthead renders on every page, so with `/cart` not yet routed Next's default prefetch 404s on every page load and the suite's `watchConsole` helper fails two of the new tests on a console error the feature does not actually have. It is temporary: phase 2 creates the route and removes the prop. A comment in the file says so. |
+| 1 | `.claude/launch.json` added | Not in the plan, but **Action required** calls for browser checks after phases 1 and 4 and the Browser pane needs a named dev-server configuration to start one. |
 
 ## Session log
 
 | Date | Phases touched | Notes |
 |---|---|---|
 | 2026-09-22 | — | Plan written from the plan-mode session. Spec committed as `99e4d2c`. No code written yet. |
+| 2026-09-22 | 1 | Phase 1 built and committed. `lib/checkout.ts` (contract), `lib/cart.ts` (the `useSyncExternalStore` store, no `useEffect` anywhere), `CartIndicator`, `AddToCart`, masthead flex layout, `.button:disabled`, and the missing `.state--empty` / `.state--loading` rules. Three new Playwright cases; 11 pass. Typecheck, lint and build clean. Browser check done: adding on `/item/DT-0001` moved the masthead count to 1 then 2 with no navigation and no console output, and the count survived a navigation — so the store is one shared module instance across the layout and page chunks, which was the risk the check existed for. One deviation recorded (`prefetch={false}`). `site-reviewer` run: no BLOCKING findings. Acted on three advisories — `load()` no longer empties an in-memory cart when storage is unreadable (latent, but phase 3's `reload()` on submit would have hit it), the add confirmation now carries the new quantity so the live region has something to announce on a repeat add and says when storage is blocked, and the masthead count is now asserted on the index and a category page too. |

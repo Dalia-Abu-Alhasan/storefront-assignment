@@ -2,6 +2,7 @@ import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
 
 const CATEGORY_PATH = "/category/desk-tools";
 const ITEM_PATH = "/item/DT-0001";
+const OUT_OF_STOCK_PATH = "/item/DT-0003";
 
 /** Collects console errors so a test can assert the page produced none. */
 function watchConsole(page: Page): string[] {
@@ -97,4 +98,55 @@ test("an unrouted address shows the root not-found state and recovers to the ind
   );
   await page.getByRole("link", { name: "Browse categories" }).click();
   await expect(page).toHaveURL(/\/$/);
+});
+
+test("adding an item from its detail page moves the masthead cart count", async ({ page }) => {
+  const errors = watchConsole(page);
+
+  await page.goto(ITEM_PATH);
+  await expect(page.locator(".masthead__cart-count")).toHaveText("0");
+
+  await page.getByRole("button", { name: "Add to cart" }).click();
+
+  await expect(page).toHaveURL(new RegExp(`${ITEM_PATH}$`));
+  await expect(page.locator(".masthead__cart-count")).toHaveText("1");
+
+  await page.reload();
+  await expect(page.locator(".masthead__cart-count")).toHaveText("1");
+
+  // The masthead carries the count on every page, not only where it was added.
+  await page.goto("/");
+  await expect(page.locator(".masthead__cart-count")).toHaveText("1");
+  await page.goto(CATEGORY_PATH);
+  await expect(page.locator(".masthead__cart-count")).toHaveText("1");
+
+  expect(errors).toEqual([]);
+});
+
+test("adding the same item twice raises the quantity rather than adding a line", async ({ page }) => {
+  await page.goto(ITEM_PATH);
+
+  const add = page.getByRole("button", { name: "Add to cart" });
+  await add.click();
+  await add.click();
+
+  await expect(page.locator(".masthead__cart-count")).toHaveText("2");
+
+  const stored = await page.evaluate(() => window.localStorage.getItem("aurora.cart"));
+  expect(JSON.parse(stored ?? "null")).toEqual({
+    version: 1,
+    items: [{ sku: "DT-0001", quantity: 2 }],
+  });
+});
+
+test("an out-of-stock item cannot be added to the cart", async ({ page }) => {
+  const errors = watchConsole(page);
+
+  await page.goto(OUT_OF_STOCK_PATH);
+
+  await expect(page.getByRole("button", { name: "Add to cart" })).toBeDisabled();
+  await expect(page.locator(".add-to-cart__note")).toHaveText(/out of stock/i);
+  await expect(page.locator(".masthead__cart-count")).toHaveText("0");
+
+  expect(errors).toEqual([]);
 });

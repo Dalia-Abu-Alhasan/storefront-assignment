@@ -61,11 +61,46 @@ a {
 }
 
 .masthead__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   max-width: 68rem;
   margin: 0 auto;
   padding: 1.25rem 1.5rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+.masthead__wordmark {
+  letter-spacing: -0.01em;
+}
+
+.masthead__cart {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  color: var(--ink-muted);
+  border-bottom: 1px solid transparent;
+}
+
+.masthead__cart:hover,
+.masthead__cart:focus-visible {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.masthead__cart-count {
+  display: inline-block;
+  min-width: 1.6rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 /* --- page header ------------------------------------------------------- */
@@ -247,6 +282,18 @@ a {
   border-color: var(--warn);
 }
 
+/* `StateMessage` has always emitted these two; only `--error` had a rule. */
+.state--empty {
+  border-style: dashed;
+  border-color: var(--border);
+}
+
+.state--loading {
+  border-style: dashed;
+  border-color: var(--border);
+  color: var(--ink-muted);
+}
+
 .state__title {
   margin: 0 0 0.4rem;
   font-weight: 600;
@@ -273,9 +320,39 @@ a {
   cursor: pointer;
 }
 
+.button:hover {
+  filter: brightness(1.08);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  border-color: var(--border);
+  background: var(--border);
+  color: var(--ink-muted);
+  cursor: not-allowed;
+  filter: none;
+}
+
 .button--quiet {
   background: transparent;
   color: var(--accent);
+}
+
+/* --- add to cart ------------------------------------------------------- */
+
+.add-to-cart {
+  margin: 1.1rem 0 1.4rem;
+}
+
+.add-to-cart__note {
+  margin: 0.55rem 0 0;
+  min-height: 1.4rem;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
 }
 
 /* --- loading skeletons ------------------------------------------------- */
