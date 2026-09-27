@@ -5,9 +5,9 @@
 | **Slug** | `cart-and-checkout` |
 | **Spec** | `_specs/cart-and-checkout.md` |
 | **Branch** | `claude/feature/cart-and-checkout` |
-| **Status** | In progress |
+| **Status** | Complete, unmerged |
 | **Created** | 2026-09-22 |
-| **Updated** | 2026-09-22 |
+| **Updated** | 2026-09-27 |
 
 ## How to resume this plan
 
@@ -48,29 +48,30 @@ See spec.
 |---|---|---|
 | 1 | Cart foundation | Done |
 | 2 | The cart page | Done |
-| 3 | Checkout and the order handler | Not started |
-| 4 | Confirmation, and closing out | Not started |
+| 3 | Checkout and the order handler | Done |
+| 4 | Confirmation, and closing out | Done |
 
-**Current state of the working tree** — Clean. Phases 1 and 2 are committed. New:
-`lib/checkout.ts`, `lib/cart.ts`, `components/CartIndicator.tsx`, `components/AddToCart.tsx`,
-`components/CartLines.tsx`, `app/cart/{page,loading,error,not-found}.tsx`, `.claude/launch.json`.
-Modified: `app/layout.tsx`, `app/item/[sku]/page.tsx`, `components/ConvertedPrice.tsx`,
-`app/globals.css`, `tests/smoke.spec.ts`. 17 Playwright cases pass. `main` is at `a60d90c` (the
-categories-index merge).
+**Current state of the working tree** — Phases 1 and 2 are committed (`9dbab2d`). Phases 3 and 4
+are built and **uncommitted**. New across them: `lib/errors.ts`, `lib/cart-lookup.ts`,
+`lib/order.ts`, `app/api/checkout/route.ts`, `app/checkout/{page,loading,error,not-found}.tsx`,
+`app/checkout/confirmation/{page,loading,error,not-found}.tsx`, `components/CheckoutForm.tsx`,
+`components/OrderConfirmation.tsx`. Modified: `lib/rates.ts`, `lib/checkout.ts`,
+`app/api/rates/route.ts`, `components/ConvertedPrice.tsx`, `app/cart/page.tsx`,
+`components/CartLines.tsx`, `app/globals.css`, `tests/smoke.spec.ts`, `CLAUDE.md` and the three
+other rule documents. 33 Playwright cases pass; typecheck, lint and build are clean, and `/cart`,
+`/checkout` and `/checkout/confirmation` are all prerendered static. `main` is still at `a60d90c`
+(the categories-index merge).
 
-**Phase 3 starts here.** Its prerequisite (phase 2) is done and nothing about it has been started —
-no `lib/errors.ts`, no `app/api/checkout/`, no `app/checkout/`, and the four documents that
-enumerate the error codes are untouched. One carried-over chore belongs to it: remove
-`prefetch={false}` from the "Proceed to checkout" `<Link>` in `components/CartLines.tsx` once
-`/checkout` is routed, the way phase 2 removed it from `CartIndicator`.
+**All four phases are done.** What is left is not implementation: commit the work, then the
+`--no-ff` merge to `main` under **Action required**. Nothing in this plan is waiting on code.
 
 ## Action required
 
 | When | Action | Why it is needed |
 |---|---|---|
-| After phase 4 | Walk the whole flow in a real browser — add an item, change a quantity, remove a line, submit with a blank field, complete an order, reload the confirmation | CLAUDE.md's definition of done requires the change to have been seen rendering, not only asserted in a test. Only a person can confirm it reads and feels right. |
-| After phase 1 | Confirm in a browser that adding an item on `/item/DT-0001` moves the masthead count | The whole design rests on `lib/cart.ts` resolving to a single module instance shared between the layout chunk and the page chunk. If it were ever duplicated the symptom is silent — the indicator simply would not update — and no test would obviously say why. |
-| After phase 4 | Merge to `main` with `--no-ff` | CLAUDE.md forbids committing directly to `main`; every change arrives on a branch and merges with `--no-ff`. Not automated here by choice. |
+| After phase 4 | ~~Walk the whole flow in a real browser~~ — **done, 2026-09-27.** Two items added from two detail pages, a quantity raised to 3, a line removed, a blank submit naming all five fields, an order placed, and the confirmation reloaded. It earned its place: it caught the unscoped media-query rule that broke the reference across three lines, which no test asserted. | CLAUDE.md's definition of done requires the change to have been seen rendering, not only asserted in a test. Only a person can confirm it reads and feels right — so read it yourself before the merge; the walk above proves it works, not that it reads well. |
+| After phase 1 | ~~Confirm in a browser that adding an item on `/item/DT-0001` moves the masthead count~~ — **done, 2026-09-22.** | The whole design rests on `lib/cart.ts` resolving to a single module instance shared between the layout chunk and the page chunk. If it were ever duplicated the symptom is silent — the indicator simply would not update — and no test would obviously say why. |
+| **Outstanding** | Commit phases 3 and 4, then merge to `main` with `--no-ff` | CLAUDE.md forbids committing directly to `main`; every change arrives on a branch and merges with `--no-ff`. Not automated here by choice, and the working tree is deliberately left dirty for the owner. |
 
 No new environment variable is needed. `/api/checkout` reads no key and makes no outbound call, so
 nothing is added to `.env`, `.env.example`, or Vercel's project settings.
@@ -393,23 +394,24 @@ validates and prices it server-side.
 
 ### Tasks
 
-- [ ] Create `lib/errors.ts` — move `ErrorCode`, `ErrorEnvelope`, `isErrorEnvelope` out of
+- [x] Create `lib/errors.ts` — move `ErrorCode`, `ErrorEnvelope`, `isErrorEnvelope` out of
       `lib/rates.ts`, and add `ITEM_UNAVAILABLE` to the union.
-- [ ] Update the two importers: `app/api/rates/route.ts` and `components/ConvertedPrice.tsx`.
-- [ ] Update the four documents that enumerate the error codes. **[complex]**
-  - [ ] `CLAUDE.md` — the Rules section
-  - [ ] `.claude/skills/house-style/references/rules.md` — the external-call rule
-  - [ ] `.claude/agents/site-reviewer.md` — the route-handler checklist
-  - [ ] Reword house rule 5 so the five-second timeout governs *outbound* calls specifically
-- [ ] Create `app/api/checkout/route.ts` — `POST` only. **[complex]** (depends on `lib/errors.ts`)
-  - [ ] Body parsing and shape validation
-  - [ ] Item validation against the catalogue
-  - [ ] Delivery-field validation
-  - [ ] Integer-cent pricing and reference minting
-- [ ] Create `app/checkout/page.tsx` and its three segment files.
-- [ ] Create `components/CheckoutForm.tsx` (`"use client"`).
-- [ ] Modify `app/globals.css` — the project's first form styling.
-- [ ] Extend `tests/smoke.spec.ts` with the phase-3 cases listed in Technical details.
+- [x] Update the two importers: `app/api/rates/route.ts` and `components/ConvertedPrice.tsx`.
+- [x] Update the four documents that enumerate the error codes. **[complex]**
+  - [x] `CLAUDE.md` — the Rules section
+  - [x] `.claude/skills/house-style/references/rules.md` — the external-call rule
+  - [x] `.claude/agents/site-reviewer.md` — the route-handler checklist
+  - [x] Reword house rule 5 so the five-second timeout governs *outbound* calls specifically —
+        that is `.claude/skills/house-style/SKILL.md`, the fourth document
+- [x] Create `app/api/checkout/route.ts` — `POST` only. **[complex]** (depends on `lib/errors.ts`)
+  - [x] Body parsing and shape validation
+  - [x] Item validation against the catalogue
+  - [x] Delivery-field validation
+  - [x] Integer-cent pricing and reference minting
+- [x] Create `app/checkout/page.tsx` and its three segment files.
+- [x] Create `components/CheckoutForm.tsx` (`"use client"`).
+- [x] Modify `app/globals.css` — the project's first form styling.
+- [x] Extend `tests/smoke.spec.ts` with the phase-3 cases listed in Technical details.
 
 ### Technical details
 
@@ -513,15 +515,15 @@ merge.
 
 ### Tasks
 
-- [ ] Create `lib/order.ts` — the same external-store shape over `sessionStorage`.
-- [ ] Create `app/checkout/confirmation/page.tsx` and its three segment files.
-- [ ] Create the confirmation's client reader component.
-- [ ] Wire success: write the order, clear the cart, then navigate.
-- [ ] Modify `CLAUDE.md` — correct the claim about client components; add the cart key, version and
+- [x] Create `lib/order.ts` — the same external-store shape over `sessionStorage`.
+- [x] Create `app/checkout/confirmation/page.tsx` and its three segment files.
+- [x] Create the confirmation's client reader component — `components/OrderConfirmation.tsx`.
+- [x] Wire success: write the order, clear the cart, then navigate.
+- [x] Modify `CLAUDE.md` — correct the claim about client components; add the cart key, version and
       the checkout endpoint.
-- [ ] Extend `tests/smoke.spec.ts` with the phase-4 cases listed in Technical details.
-- [ ] Run the `site-reviewer` subagent and address every BLOCKING finding.
-- [ ] Record at least one entry under **Deviations**, and complete the **Session log**.
+- [x] Extend `tests/smoke.spec.ts` with the phase-4 cases listed in Technical details.
+- [x] Run the `site-reviewer` subagent and address every BLOCKING finding.
+- [x] Record at least one entry under **Deviations**, and complete the **Session log**.
 
 ### Technical details
 
@@ -534,6 +536,13 @@ rather than a blank confirmation.
 
 Session scope, not local, is deliberate: it is what makes a refresh work and a bookmarked
 confirmation fall through to the empty state, with no server involvement.
+
+**`StateMessage` has no success tone.** `tone` is `"empty" | "error" | "loading"`, and phase 3's
+provisional success branch borrowed `tone="empty"` — so a placed order is styled as an empty state
+and announced under the empty tone's `role="status"`. `site-reviewer` raised it at the phase 3
+review and agreed it was not worth fixing in a branch about to be deleted. If the confirmation
+reuses `StateMessage`, add a `"success"` tone with its own rule in `app/globals.css` rather than
+inheriting `"empty"` a second time.
 
 **The confirmation page** — `<PageHeader eyebrow="Order" title={…} subtitle={…} />` where the
 subtitle states plainly that this is a demonstration shop and that nothing is stored or dispatched.
@@ -600,7 +609,7 @@ existing suite.
 
 | Question | Blocking? | Owner |
 |---|---|---|
-| Does `site-reviewer` read house rule 5's five-second timeout as applying to every route handler, or only to handlers making an outbound call? Phase 3 rewords the rule on the assumption it is the latter; if that reading is wrong, `/api/checkout` needs a different accommodation | No — settled by the phase 3 rewording unless the reviewer disagrees | Project owner, at the phase 3 review |
+| ~~Does `site-reviewer` read house rule 5's five-second timeout as applying to every route handler, or only to handlers making an outbound call?~~ **Settled at the phase 3 review: only to handlers making an outbound call.** The reviewer accepted the rewording explicitly — the timeout bounds a dependency the handler does not control, and `/api/checkout` has none. It also confirmed the rewording did not weaken anything else: the envelope still applies to every handler, and the outbound-only clause cannot be read as permission to drop the signal from the rates route. | No | Closed |
 | Is the `sku → item` lookup better passed whole into the RSC payload, or filtered? Whole is correct at 12 items and the plan does that; the threshold at which it stops being correct is not established | No | Revisit if the catalogue grows past a few hundred items |
 
 ## Deviations
@@ -609,8 +618,17 @@ existing suite.
 |---|---|---|
 | 1 | `components/CartIndicator.tsx` passes `prefetch={false}` to its `<Link href="/cart">` | The masthead renders on every page, so with `/cart` not yet routed Next's default prefetch 404s on every page load and the suite's `watchConsole` helper fails two of the new tests on a console error the feature does not actually have. It is temporary: phase 2 creates the route and removes the prop. A comment in the file says so. |
 | 1 | `.claude/launch.json` added | Not in the plan, but **Action required** calls for browser checks after phases 1 and 4 and the Browser pane needs a named dev-server configuration to start one. |
-| 2 | The same `prefetch={false}` now sits on the cart page's "Proceed to checkout" `<Link>` | Same reason, one route along: `/checkout` arrives in phase 3. Phase 2 removed the phase-1 instance from `CartIndicator` as promised. Phase 3 removes this one. |
+| 2 | The same `prefetch={false}` now sits on the cart page's "Proceed to checkout" `<Link>` | Same reason, one route along: `/checkout` arrives in phase 3. Phase 2 removed the phase-1 instance from `CartIndicator` as promised. Phase 3 removes this one. *Done.* |
 | 2 | The cart's storage-`unavailable` error state carries no action | House rule 2 says an error state offers a retry. A retry cannot un-block browser storage, so the guidance names the two real ways out — allow storage, or order now — and the segment-level retry stays in `app/cart/error.tsx`. Recorded here rather than adding a control that could not work. |
+| 3 | `lib/cart-lookup.ts` added, and `app/cart/page.tsx` rewritten to use it | The plan had the checkout page shell build its own sku-to-item table, which would have been the cart page's twelve-line loop copied verbatim into the adjacent file. Extracting it gives the "why a whole table rather than a request" reasoning one home instead of two, and the module is now the single place saying that importing it from a client component would drag `assertCatalogue()` into the browser bundle. |
+| 3 | The fourth document carrying house rule 5 is `.claude/skills/house-style/SKILL.md` | The plan named three files, then separately said "reword house rule 5" without saying where rule 5 lives. It lives in `SKILL.md`, which states all six rules in one line each; `references/rules.md` carries the long form. Both were reworded, so the four documents are `CLAUDE.md`, `SKILL.md`, `references/rules.md` and `site-reviewer.md`. |
+| 3 | `CheckoutForm` carries a provisional `placed` branch that phase 4 deletes | The plan does not say what phase 3's success path does, and `/checkout/confirmation` belongs to phase 4. A successful order had to end somewhere: without this branch, `clear()` drops the visitor straight into the checkout empty state, which reads as though the order vanished. It renders the reference, the date through `formatDate`, the server's lines and the server's total, and says the shop is a demonstration. Roughly forty lines, marked in the file as phase 4's to replace — not to keep alongside the real confirmation. |
+| 4 | `CheckoutForm` gained a `leaving` flag, which the plan does not mention | The plan's success order — write the order, clear the cart, then navigate — is right, but `clear()` notifies the cart store synchronously, so the form re-rendered into its own "There is nothing to check out" empty state for the frame or two before the push landed. A successful order flashing the empty state reads as though it vanished. `leaving` is set first and never unset, and the busy placeholder it renders is checked before the empty branch. |
+| 4 | `.summary` and `.form` inside the wide-viewport media query were unscoped, and are now `.checkout > .summary` / `.checkout > .form` | Written in phase 3 as bare selectors inside `@media (min-width: 52rem)`, so they applied to *any* `.summary` anywhere. The confirmation reuses `.summary`, and was being dragged into `grid-column: 2` of a grid it is not part of — the reference wrapped across three lines at its own hyphens and read as three references. Caught in the browser, not by a test. `.order__reference` also gained `white-space: nowrap`. |
+| 4 | The confirmation's success branch does not use `StateMessage`, so no `"success"` tone was added | Phase 3 left a note here saying to add one if the confirmation reused `StateMessage`. It does not: the reference, date, lines and total are ordinary content, not a state message, so they render as their own block. `StateMessage` keeps its three tones and the note is resolved rather than carried forward. |
+| 4 | `README.md` updated, which the plan does not own | Its summary did not mention the cart, its layout tree was missing seven files, and its house rule 5 still said the five-second timeout applies to every handler — leaving one document disagreeing with the four that phase 3 corrected. Phase 4's goal is that the rule files tell the truth again; a README that contradicts them is the same defect one file over. |
+| 4 | Phase 3's test of the provisional success branch was deleted rather than rewritten | It asserted the inline `placed` rendering that phase 4 removed. Its two real claims — the reference format and that a placed order empties the cart — are both asserted by the new confirmation cases, so rewriting it would have duplicated them. |
+| 3 | The checkout form-level error state's retry control is a second submit button | House rule 2 wants an error state to offer a retry. A network failure's retry genuinely is "submit again", so the `StateMessage`'s action is a `type="submit"` button inside the same form — the same control as the one below it, not a decoration. Unlike the phase-2 case, a working retry exists here, so it is offered rather than explained away. |
 
 ## Session log
 
@@ -618,4 +636,7 @@ existing suite.
 |---|---|---|
 | 2026-09-22 | — | Plan written from the plan-mode session. Spec committed as `99e4d2c`. No code written yet. |
 | 2026-09-22 | 1 | Phase 1 built and committed. `lib/checkout.ts` (contract), `lib/cart.ts` (the `useSyncExternalStore` store, no `useEffect` anywhere), `CartIndicator`, `AddToCart`, masthead flex layout, `.button:disabled`, and the missing `.state--empty` / `.state--loading` rules. Three new Playwright cases; 11 pass. Typecheck, lint and build clean. Browser check done: adding on `/item/DT-0001` moved the masthead count to 1 then 2 with no navigation and no console output, and the count survived a navigation — so the store is one shared module instance across the layout and page chunks, which was the risk the check existed for. One deviation recorded (`prefetch={false}`). `site-reviewer` run: no BLOCKING findings. Acted on three advisories — `load()` no longer empties an in-memory cart when storage is unreadable (latent, but phase 3's `reload()` on submit would have hit it), the add confirmation now carries the new quantity so the live region has something to announce on a repeat add and says when storage is blocked, and the masthead count is now asserted on the index and a category page too. |
+| 2026-09-27 | 4 | `site-reviewer` on the whole feature, phases 1-4: **no BLOCKING findings**. Five advisories, all acted on. Two were real defects the earlier passes missed. The confirmation's subtitle said "nothing is stored" while `lib/order.ts` writes to `sessionStorage` and two other strings on the same feature said so — reworded to "nothing is kept on our servers", which is the true claim. And the `ITEM_UNAVAILABLE` banner was a third direct child of `.checkout` with no grid placement, so at 52rem and wider, with both row-1 cells explicitly taken, it was auto-placed into row 2 — the server's rejection rendering *below* the entire form, where nobody looks after pressing Place order. The banner and the form now share a `.checkout__main` column, which needs no conditional rule for when the banner is absent; confirmed in the browser at 1280px and pinned by a new case that forces a 409 and asserts the banner sits above the form. The other three: the success branch now says "Your order was placed", since the header title has to read for all four states and nothing else on the page asserted it; the submit `fetch` is now bounded by a ten-second client-side timeout, so a request that never settles no longer leaves the button disabled and the status stuck forever; and `CLAUDE.md`'s leaf list no longer reads as exhaustive, naming the two stores and the `error.tsx` boundaries, with the segment rule exempting `app/api/*`. The reviewer also confirmed no `tone="success"` is owed — `StateMessage` is for states with nothing to show, and the confirmation has content — and that no page in the feature is a dead end. 34 cases pass. |
+| 2026-09-27 | 4 | Phase 4 built, uncommitted — the feature is complete. `lib/order.ts` holds the last order as a module variable mirrored to `sessionStorage`: the module variable is the primary source, so it survives the soft push from checkout, and storage is what makes a refresh work and a bookmark fall through to the empty state. Its `readOrder` validates thoroughly on purpose — `formatDate` throws on a non-ISO date and `formatMoney` on a non-finite number, so a half-checked order would take out the confirmation's error boundary instead of showing its unreadable state. An unreadable payload is reported once and discarded, so a reload recovers to empty rather than stranding anyone on an error they cannot clear. `/checkout/confirmation` has all four segment files; the header is written for all four states, because a server component cannot know which one the leaf will render. `CheckoutForm`'s provisional branch is gone and success now writes, clears and pushes, in that order. `CLAUDE.md` no longer claims `ConvertedPrice` is the only client component and now records both storage keys, the cart version and the checkout endpoint; 107 lines. Five new Playwright cases and one deleted; 33 pass. Typecheck, lint and build clean, and all three new routes are prerendered static. Browser walk of the whole flow: added two items from two detail pages, raised a quantity to 3, removed a line, watched the subtotal follow, submitted blank and got all five fields named with focus on the first, then ordered — `AUR-20260927-763D`, `27 Sep 2026`, `73.50 EUR`, cart emptied, and a refresh showed the same order and sent nothing. That walk caught the one thing no test would have: the confirmation's reference broken across three lines by a media-query rule phase 3 left unscoped. Four deviations recorded. |
+| 2026-09-27 | 3 | Phase 3 built, uncommitted. `lib/errors.ts` holds the house envelope and the new `ITEM_UNAVAILABLE`; `lib/rates.ts` keeps only `RateResponse`, and both importers follow. `POST /api/checkout` validates in the plan's order — shape, line count, duplicate sku, sku resolves, in stock, quantity, then the five delivery fields — and prices in integer cents from the catalogue, ignoring anything price-shaped in the request. It sets no `AbortSignal`, reads no environment variable and logs nothing; the reworded house rule 5 scopes the five-second timeout to outbound calls, and all four documents that state it now agree with each other and with `lib/errors.ts`. `/checkout` has all four segment files, and `CheckoutForm` covers loading, empty, blocked-line and success with the cleanup-only abort effect as the feature's only `useEffect` — lint was run against that construct on its own before the rest of the form existed, and the one thing it objects to is reading `inFlight.current` during render, which the form never does. Phase 2's `prefetch={false}` came off `CartLines`. Eleven new Playwright cases; 28 pass. Typecheck, lint and build clean, and `/checkout` is prerendered static. Browser check: a two-line cart summarised and converted to USD, a blank submit marked all five fields and moved focus to the first, and a complete submit returned `AUR-20260922-F48B` dated `22 Sep 2026` at `138.00 EUR` and emptied the masthead count — no console output throughout; at 375px the summary stacks above the form, so what is being ordered is read before anything is typed. A stale cart left in the browser profile showed the blocked-line branch as a bonus. Four deviations recorded. `site-reviewer`: no BLOCKING findings, and it accepted the rule 5 rewording explicitly — the outbound-only clause is scoped tightly enough that it cannot be read as permission to drop the signal from the rates route, and the envelope is still stated as applying to every handler. Acted on two of its three advisories: the five `{ key, label }` delivery-field pairs moved into `lib/checkout.ts`, which both the form and the handler already import, so a renamed label can no longer degrade silently into a form-level error instead of failing loudly; and a crafted `sku` is now length-bounded before it can be echoed back through an `ITEM_UNAVAILABLE` message, with a case covering it (29 pass). The third — the success branch borrowing `tone="empty"` — is recorded in phase 4's technical details, since phase 4 deletes that branch and is where a success tone would be earned. |
 | 2026-09-22 | 2 | Phase 2 built and committed. `/cart` with all four segment files, `CartLines` covering the four states, quantity controls bounded at 1 and `MAX_PER_LINE`, per-line and bulk removal, unavailable lines excluded from the subtotal and blocking checkout, subtotal summed in integer cents, and `ConvertedPrice` reused for the approximation via its new `className` prop. Phase 1's `prefetch={false}` came off `CartIndicator`. Six new Playwright cases; 17 pass. Typecheck, lint and build clean, and `/cart` is in `.next/prerender-manifest.json`. Browser check: two real lines priced and totalled correctly, and a seeded cart of one good line, one out-of-stock item and one sku that is not in the catalogue showed both blocked branches, held the subtotal at the good line only, and disabled the checkout control — no console output throughout. `site-reviewer`: no BLOCKING findings. Acted on three advisories — per-item accessible names on the remove buttons (they were all called "Remove", which was also a latent Playwright strict-mode trap), coverage for the out-of-stock branch, and a new case that blocks `localStorage` outright and proves the cart still works in memory and says it will not be saved. The fourth is recorded under **Deviations**. Stopping here: phase 3 runs in a separate session at the owner's request. |

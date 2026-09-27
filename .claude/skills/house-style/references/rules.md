@@ -88,17 +88,30 @@ fixed house style.
 ## 5. External calls
 
 All outbound HTTP happens inside `app/api/*/route.ts` route handlers — never in a server component,
-never in a client component. Every such call:
+never in a client component. Every such **outbound call**:
 
 - Uses `AbortSignal.timeout(5000)`.
 - Wraps the fetch in try/catch and distinguishes a timeout (`DOMException` named `"TimeoutError"`)
   from any other failure.
-- On any failure, returns `{ "error": { "code": ErrorCode, "message": string } }` with an
-  appropriate HTTP status. `ErrorCode` is one of `MISSING_CONFIG`, `UPSTREAM_TIMEOUT`,
-  `UPSTREAM_ERROR`, `BAD_REQUEST` — see `lib/rates.ts` for the shared type and
-  `app/api/rates/route.ts` for the reference implementation.
 - Never puts the upstream URL or the API key in the response body, in a log line, or in an error
   message shown to the user.
+
+The five-second timeout governs outbound calls specifically. A route handler that calls nothing out
+— `app/api/checkout/route.ts` reads the committed catalogue and returns — has nothing to wrap, and
+must not invent a signal to look compliant.
+
+The **error envelope, by contrast, applies to every route handler**, outbound call or not. On any
+failure a handler returns `{ "error": { "code": ErrorCode, "message": string } }`, and nothing else,
+with an appropriate HTTP status. `ErrorCode` is one of `MISSING_CONFIG`, `UPSTREAM_TIMEOUT`,
+`UPSTREAM_ERROR`, `BAD_REQUEST`, `ITEM_UNAVAILABLE` — see `lib/errors.ts` for the shared type,
+`app/api/rates/route.ts` for the outbound reference and `app/api/checkout/route.ts` for a handler
+that validates without calling out. The envelope carries a code and a message and no third field: a
+distinction that changes only the wording belongs in the message.
+
+`message` is written for a visitor. It may name an item or a field; it must never disclose a file
+path, a stack trace, the catalogue's structure or anything about the runtime. A handler never logs a
+request body either, whole or in part — the checkout body carries a name, an address and a phone
+number.
 
 Client components that need this data (e.g. `components/ConvertedPrice.tsx`) call the app's *own*
 route handler (`/api/rates`), never the upstream service directly — the browser never sees the

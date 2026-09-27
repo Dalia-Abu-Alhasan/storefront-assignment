@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { isErrorEnvelope } from "@/lib/errors";
 import { formatMoney } from "@/lib/format";
-import { isErrorEnvelope, type RateResponse } from "@/lib/rates";
+import type { RateResponse } from "@/lib/rates";
 
 type Status =
   | { kind: "loading" }

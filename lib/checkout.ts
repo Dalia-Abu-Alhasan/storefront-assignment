@@ -68,4 +68,20 @@ export type Shipping = {
   phone: string;
 };
 
+/**
+ * The five delivery fields, in the order the form presents them.
+ *
+ * One table, imported by the form and by the route handler alike, because the
+ * handler writes its rejection messages from these labels and the form maps
+ * those messages back onto the field they name. Two copies would let a renamed
+ * label degrade silently into a form-level error instead of failing loudly.
+ */
+export const SHIPPING_FIELDS: { key: keyof Shipping; label: string }[] = [
+  { key: "fullName", label: "Full name" },
+  { key: "addressLine", label: "Address" },
+  { key: "city", label: "City" },
+  { key: "postalCode", label: "Postal code" },
+  { key: "phone", label: "Phone" },
+];
+
 export type CheckoutRequest = { items: CartLine[]; shipping: Shipping };

@@ -561,3 +561,257 @@ a {
   font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
 }
+
+/* --- checkout ---------------------------------------------------------- */
+
+.checkout {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 52rem) {
+  .checkout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+    align-items: start;
+    gap: 2.5rem;
+  }
+
+  /* The form leads on a wide screen; the summary sits beside it. Scoped to a
+     direct child, or the confirmation's own `.summary` would be dragged into
+     column 2 of a grid it is not in. */
+  .checkout > .summary {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .checkout > .checkout__main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+/* The rejection banner and the form, one above the other, in one column. */
+.checkout__main {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.summary {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-raised);
+  padding: 1.25rem;
+}
+
+.summary__heading {
+  margin: 0 0 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.summary__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.summary__line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.15rem 0.9rem;
+}
+
+.summary__name {
+  font-weight: 600;
+}
+
+.summary__quantity {
+  grid-column: 1;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.summary__amount {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.9rem;
+  margin: 1rem 0 0;
+  border-top: 1px solid var(--border);
+  padding-top: 0.9rem;
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.summary__total-amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.summary__converted {
+  margin: 0.4rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+}
+
+.summary__back {
+  display: inline-block;
+  margin-top: 0.9rem;
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* --- forms ------------------------------------------------------------- */
+
+.form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form__notice {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0.5rem;
+  background: var(--surface-raised);
+  padding: 0.8rem 1rem;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+}
+
+.fieldset {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.fieldset__legend {
+  padding: 0;
+  margin-bottom: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.field__label {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.field__input {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface-raised);
+  color: var(--ink);
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+
+.field__input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.field__input[aria-invalid="true"] {
+  border-color: var(--warn);
+}
+
+/* Reserved height, so a message appearing does not shift the fields below it. */
+.field__error {
+  margin: 0;
+  min-height: 1.25rem;
+  color: var(--warn);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.form__actions {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+}
+
+.form__status {
+  margin: 0;
+  min-height: 1.4rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+/* --- order confirmation ------------------------------------------------ */
+
+.order {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 34rem;
+}
+
+.order__placed {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.order__meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.35rem 1.25rem;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-raised);
+  padding: 1.25rem;
+}
+
+.order__meta dt {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  align-self: center;
+}
+
+.order__meta dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.order__reference {
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  /* A reference broken across three lines at its hyphens reads as three
+     references. It is short enough that it never needs to wrap. */
+  white-space: nowrap;
+}
+
+.order__actions {
+  display: flex;
+  gap: 0.75rem;
+}

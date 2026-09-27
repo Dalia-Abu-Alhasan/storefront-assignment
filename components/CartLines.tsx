@@ -209,8 +209,7 @@ export function CartLines({ lookup }: { lookup: CartLookup }) {
             Proceed to checkout
           </button>
         ) : (
-          /* `prefetch={false}` until `/checkout` is routed — see CartIndicator. */
-          <Link className="button" href="/checkout" prefetch={false}>
+          <Link className="button" href="/checkout">
             Proceed to checkout
           </Link>
         )}

@@ -30,11 +30,13 @@ it silently.
    stays ISO (`YYYY-MM-DD`) in the JSON; only the rendered output changes.
 4. **Money** — render only through `formatMoney()` from `lib/format.ts` → `12.50 EUR`. Never
    `toFixed`, `Intl.NumberFormat`, or a currency symbol.
-5. **External calls** — only inside `app/api/*/route.ts`, with `AbortSignal.timeout(5000)`. Every
-   failure path returns `{ "error": { "code": "...", "message": "..." } }` with one of
-   `MISSING_CONFIG` / `UPSTREAM_TIMEOUT` / `UPSTREAM_ERROR` / `BAD_REQUEST`. Never leak an upstream
-   URL or key in the response body. Client components read the app's own route handler, never the
-   upstream API directly — see `components/ConvertedPrice.tsx`.
+5. **Route handlers** — outbound HTTP only inside `app/api/*/route.ts`, and every *outbound call*
+   sets `AbortSignal.timeout(5000)`; a handler that calls nothing out has nothing to wrap. Every
+   route handler's failure path returns `{ "error": { "code": "...", "message": "..." } }` and
+   nothing else, with one of `MISSING_CONFIG` / `UPSTREAM_TIMEOUT` / `UPSTREAM_ERROR` /
+   `BAD_REQUEST` / `ITEM_UNAVAILABLE` from `lib/errors.ts`. Never leak an upstream URL, a key, or a
+   request body into a response or a log. Client components read the app's own route handler, never
+   the upstream API directly — see `components/ConvertedPrice.tsx`.
 6. **Images** — `next/image` always, always with explicit `width`/`height`, always with `alt`.
    Decorative images get `alt=""`; every other image gets real descriptive alt text. Never render a
    raw external URL as an `<img>` without dimensions.
