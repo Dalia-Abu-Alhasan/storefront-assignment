@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import type { ErrorCode, ErrorEnvelope, RateResponse } from "@/lib/rates";
+import type { ErrorCode, ErrorEnvelope } from "@/lib/errors";
+import type { RateResponse } from "@/lib/rates";
 
 const UPSTREAM_TIMEOUT_MS = 5_000;
 const CACHE_SECONDS = 3_600;

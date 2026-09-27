@@ -1,7 +1,14 @@
 # Aurora Supply Co.
 
-A small catalogue storefront: a categories index, category list pages, item detail pages, and one
-server-side currency conversion. Built as the vertical slice for the AI coding agents assignment.
+A small catalogue storefront: a categories index, category list pages, item detail pages, a cart
+and checkout that ends at a confirmation, and one server-side currency conversion. Built as the
+vertical slice for the AI coding agents assignment.
+
+The cart lives in the visitor's own browser and holds item codes and quantities only. Ordering is
+the one thing the server decides: `POST /api/checkout` re-reads the committed catalogue, re-checks
+availability and recomputes the total, so no price and no availability claim originates on the
+client. Nothing is persisted server-side — there is nowhere to persist it — so an order exists only
+as the response that created it, and the confirmation says so plainly.
 
 ## Stack
 
@@ -51,10 +58,20 @@ app/
   loading.tsx               index loading state
   category/[slug]/          list page + loading, error, not-found
   item/[sku]/               detail page + loading, error, not-found
+  cart/                     cart page + loading, error, not-found
+  checkout/                 checkout page + loading, error, not-found
+  checkout/confirmation/    confirmation + loading, error, not-found
   api/rates/route.ts        the one external call
-components/                 PageHeader, CategoryCard, ItemCard, StateMessage, ConvertedPrice
+  api/checkout/route.ts     places an order; no external call, no env read
+components/                 PageHeader, CategoryCard, ItemCard, StateMessage, ConvertedPrice,
+                            CartIndicator, AddToCart, CartLines, CheckoutForm, OrderConfirmation
 lib/catalogue.ts            types, runtime validator, accessors
 lib/format.ts               formatDate, formatMoney — the only formatters
+lib/errors.ts               the house error envelope, shared by every route handler
+lib/checkout.ts             storage keys, caps, and the order/shipping contract
+lib/cart.ts                 the cart, a client store over localStorage
+lib/order.ts                the last order, a client store over sessionStorage
+lib/cart-lookup.ts          the sku-to-item table the cart and checkout shells supply
 data/catalogue.json         the catalogue
 tests/smoke.spec.ts         Playwright smoke tests
 ```
@@ -68,6 +85,7 @@ Six conventions hold across every page. Their detailed home is the house-style s
    success.
 3. Dates render as `15 Sep 2026`, only via `formatDate`.
 4. Money renders as `12.50 EUR`, only via `formatMoney`.
-5. External calls live in route handlers, with a five-second timeout and the standard error
-   envelope `{ error: { code, message } }`.
+5. External calls live in route handlers, and every *outbound call* sets a five-second timeout.
+   Every route handler — outbound call or not — returns the standard envelope
+   `{ error: { code, message } }` on failure, with a code from `lib/errors.ts`.
 6. Images always carry `alt` and explicit `width` and `height`.

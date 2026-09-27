@@ -41,10 +41,13 @@ could not verify it, say what you could not check and why.
 
 - Every outbound HTTP call lives in `app/api/*/route.ts`. A `fetch` to an external host from a page,
   layout or component is BLOCKING.
-- Every outbound call sets `AbortSignal.timeout(5000)`.
-- Every failure path returns `{ error: { code, message } }` with a code from `MISSING_CONFIG`,
-  `UPSTREAM_TIMEOUT`, `UPSTREAM_ERROR`, `BAD_REQUEST`.
+- Every outbound call sets `AbortSignal.timeout(5000)`. This governs outbound calls only — a
+  handler that makes none has nothing to wrap, and a missing signal there is not a finding.
+- Every failure path returns `{ error: { code, message } }` and nothing else, with a code from
+  `lib/errors.ts`: `MISSING_CONFIG`, `UPSTREAM_TIMEOUT`, `UPSTREAM_ERROR`, `BAD_REQUEST`,
+  `ITEM_UNAVAILABLE`. A code not in `lib/errors.ts` is BLOCKING.
 - No response body contains an upstream URL or a key.
+- No handler logs a request body, whole or in part, on success or on failure.
 - No route handler throws uncaught.
 
 ### Page headers

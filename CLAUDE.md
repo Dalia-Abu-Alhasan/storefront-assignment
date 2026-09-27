@@ -26,12 +26,22 @@ Aurora Supply Co. — a catalogue storefront. Committed JSON, no database.
 - `lib/catalogue.ts` runs `assertCatalogue()` **at import time**, so malformed JSON fails the build
   rather than rendering broken pages. Read data only through `getCategories`,
   `getCategoryBySlug`, `getItemBySku` — never import the JSON directly.
-- Pages are server components. `ConvertedPrice` is the only client component; it exists because a
-  server component cannot fetch its own route handler without an absolute URL.
+- **Pages stay server components.** Client code lives in named leaves a page or layout renders —
+  `ConvertedPrice`, `CartIndicator`, `AddToCart`, `CartLines`, `CheckoutForm`, `OrderConfirmation` —
+  plus the two browser stores, `lib/cart.ts` and `lib/order.ts`, and every `error.tsx`, which Next
+  requires to be a client component. A `"use client"` directive never belongs in a `page.tsx` or in
+  `app/layout.tsx`.
 - `app/page.tsx` is the categories index. It lists every category as a card linking to that
   category's list page.
-- Route segments each own `loading.tsx`, `error.tsx` and `not-found.tsx`. Adding a segment means
-  adding all three.
+- Every segment that renders UI owns `loading.tsx`, `error.tsx` and `not-found.tsx`. Adding one
+  means adding all three. `app/api/*` is exempt: route handlers render nothing.
+- The cart lives in the browser, not on the server: `localStorage` under `aurora.cart`, shape
+  `{ version: 1, items: [{ sku, quantity }] }`. The last order is `sessionStorage` under
+  `aurora.order`. Both are module-level stores read with `useSyncExternalStore` — `lib/cart.ts` and
+  `lib/order.ts`. Their keys, version and caps live in `lib/checkout.ts`.
+- `POST /api/checkout` is the one operation. It re-reads the catalogue, re-checks availability and
+  recomputes the total in integer cents; no price the client sends is trusted. Nothing is persisted
+  server-side, because there is nowhere to persist it.
 
 ## Data shape
 
@@ -52,10 +62,14 @@ Every field is required. Adding one means updating the types in `lib/catalogue.t
   the house format is `15 Sep 2026`. `addedOn` stays ISO in the JSON.
 - Every page renders `<PageHeader>`. No page writes its own `<h1>` or heading markup.
 - Every list renders a real empty state with guidance, not a bare "no results".
-- Outbound HTTP happens in `app/api/*/route.ts` only, with `AbortSignal.timeout(5000)`, and
-  returns `{ error: { code, message } }` on failure. Codes are `MISSING_CONFIG`,
-  `UPSTREAM_TIMEOUT`, `UPSTREAM_ERROR`, `BAD_REQUEST`.
-- A route handler never puts a key or an upstream URL in a response body.
+- Outbound HTTP happens in `app/api/*/route.ts` only, and every **outbound call** sets
+  `AbortSignal.timeout(5000)`. A handler that calls nothing out has nothing to wrap.
+- Every route handler returns `{ error: { code, message } }` on failure, with a code from
+  `lib/errors.ts`: `MISSING_CONFIG`, `UPSTREAM_TIMEOUT`, `UPSTREAM_ERROR`, `BAD_REQUEST`,
+  `ITEM_UNAVAILABLE`. The envelope is house-wide; `lib/rates.ts` holds only that route's own
+  response type.
+- A route handler never puts a key or an upstream URL in a response body, and never logs a request
+  body — delivery details are personal data.
 - Images use `next/image` with an `alt` and explicit `width` and `height`. Decorative images use
   `alt=""`; nothing else may omit it.
 - `useEffect` must not call `setState` synchronously in its body — `react-hooks/set-state-in-effect`
